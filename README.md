@@ -17,13 +17,9 @@ Dos contenedores en la red `nudat_net`:
 | Servicio | Puerto host | Credenciales |
 |----------|-------------|--------------|
 | **mysql** | 3306 | user/pass/db: `nudat` / `nudat` / `nudat` (root: `nudatroot`) |
-| **jupyter** | 8888 | token: `nudat` → http://localhost:8888 |
+| **jupyter** | 8888 | token: `nudat` - http://localhost:8888 |
 
 Volumen persistente: `mysql_data` (los datos no se pierden al parar el contenedor).
-
-### Requisitos
-
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) con **integración WSL2** activada (Settings → Resources → WSL Integration → tu distro).
 
 ### Levantar
 
@@ -33,7 +29,7 @@ docker compose up -d --build
 docker compose ps
 ```
 
-Si en WSL el comando `docker` no existe, usa `docker.exe` (Docker Desktop) o habilita la integración WSL.
+Si en WSL el comando `docker` no existe, use `docker.exe` (Docker Desktop) o habilite la integración WSL.
 
 ### Cargar datos limpios en MySQL
 
@@ -45,9 +41,9 @@ docker compose exec jupyter python -m src.load_db
 
 O en JupyterLab: [`notebooks/02b_load_mysql.ipynb`](notebooks/02b_load_mysql.ipynb).
 
-La carga lee `data/processed/` (salida de `02_clean_etl.ipynb`) y puebla las 6 tablas.
+La carga lee `data/processed/` (salida de `02_clean_etl.ipynb`) y llena las 6 tablas.
 
-### Conexión Jupyter → MySQL
+### Conexión Jupyter - MySQL
 
 Dentro de Docker, el host es el **nombre del servicio**: `mysql` (variable `MYSQL_HOST`).  
 Desde DBeaver en Windows: `localhost:3306`.
@@ -62,7 +58,7 @@ docker compose down -v       # borra también mysql_data (re-init schema)
 ## Notebooks (orden)
 
 1. [`notebooks/01_eda.ipynb`](notebooks/01_eda.ipynb) — exploración  
-2. [`notebooks/02_clean_etl.ipynb`](notebooks/02_clean_etl.ipynb) — limpieza → `data/processed/`  
+2. [`notebooks/02_clean_etl.ipynb`](notebooks/02_clean_etl.ipynb) — limpieza - `data/processed/`  
 3. [`notebooks/02b_load_mysql.ipynb`](notebooks/02b_load_mysql.ipynb) — conexión y carga MySQL  
 4. [`notebooks/03_analysis.ipynb`](notebooks/03_analysis.ipynb) — consultas SQL + análisis de la pregunta  
 
