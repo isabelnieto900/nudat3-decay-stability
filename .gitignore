@@ -1,0 +1,12 @@
+instructions.pdf
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.env
+.venv/
+venv/
+mysql_data/
+*.log
+.DS_Store
+figures/*.png
+!figures/.gitkeep
