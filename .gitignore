@@ -8,5 +8,3 @@ venv/
 mysql_data/
 *.log
 .DS_Store
-figures/*.png
-!figures/.gitkeep
