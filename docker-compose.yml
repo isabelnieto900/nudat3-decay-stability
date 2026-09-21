@@ -1,0 +1,70 @@
+# NuDat: MySQL + JupyterLab on a shared Docker network
+#
+# Usage:
+#   docker compose up -d --build
+#   # Jupyter: http://localhost:8888  (token: nudat)
+#   # MySQL:   localhost:3306  user/pass/db: nudat/nudat/nudat
+#   # From Jupyter terminal: python -m src.load_db
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: nudat-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: nudatroot
+      MYSQL_DATABASE: nudat
+      MYSQL_USER: nudat
+      MYSQL_PASSWORD: nudat
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    networks:
+      - nudat_net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-pnudatroot"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile.jupyter
+    container_name: nudat-jupyter
+    restart: unless-stopped
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: "3306"
+      MYSQL_USER: nudat
+      MYSQL_PASSWORD: nudat
+      MYSQL_DATABASE: nudat
+      JUPYTER_TOKEN: nudat
+      PYTHONPATH: /home/jovyan/work
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./:/home/jovyan/work
+    working_dir: /home/jovyan/work
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - nudat_net
+    # JupyterLab with fixed token; repo is the working directory
+    command: >
+      start-notebook.py
+      --ServerApp.root_dir=/home/jovyan/work
+      --IdentityProvider.token=nudat
+      --ServerApp.ip=0.0.0.0
+
+volumes:
+  mysql_data:
+
+networks:
+  nudat_net:
+    name: nudat_net
+    driver: bridge
