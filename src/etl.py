@@ -1,8 +1,8 @@
-"""ETL helpers for NuDat wallet cards + chart exports.
+"""ETL helpers for NuDat wallet cards + Chart half-life export.
 
 NOTE: La limpieza oficial del proyecto está en notebooks/02_clean_etl.ipynb
-(notebook-only). Este módulo es un utilitario opcional / legado; no lo uses
-como fuente de verdad frente al notebook 02.
+(notebook-only). Este módulo es un utilitario opcional; la fuente de verdad
+es el notebook 02.
 """
 
 from __future__ import annotations
@@ -19,8 +19,6 @@ PROCESSED = ROOT / "data" / "processed"
 
 WALLET = RAW / "walletcards.csv"
 EXPORT_HL = RAW / "nndc_nudat_data_export (10).csv"
-EXPORT_QBE = RAW / "nndc_nudat_data_export (12).csv"
-EXPORT_PAIR = RAW / "nndc_nudat_data_export (21).csv"
 
 HALF_LIFE_TO_SECONDS = {
     "ys": 1e-24,
@@ -54,15 +52,11 @@ def load_wallet() -> pd.DataFrame:
             "Element": "element",
             "Level Energy": "level_energy",
             "Level Energy (Unit)": "level_energy_unit",
-            "Level Energy (Error)": "level_energy_error",
             "Spin-Parity": "spin_parity",
             "Half-Life": "half_life_raw",
             "Half-Life (Unit)": "half_life_unit",
-            "Half-Life (Error)": "half_life_error",
             "Abundance": "abundance",
-            "Abundance (Error)": "abundance_error",
             "Mass Excess": "mass_excess_keV",
-            "Mass Excess (Error)": "mass_excess_error",
             "Decay Modes": "decay_modes_raw",
             "Decay Width": "decay_width",
             "Decay Width (Unit)": "decay_width_unit",
@@ -75,15 +69,11 @@ def load_wallet() -> pd.DataFrame:
         "element",
         "level_energy",
         "level_energy_unit",
-        "level_energy_error",
         "spin_parity",
         "half_life_raw",
         "half_life_unit",
-        "half_life_error",
         "abundance",
-        "abundance_error",
         "mass_excess_keV",
-        "mass_excess_error",
         "decay_modes_raw",
         "decay_width",
         "decay_width_unit",
@@ -96,14 +86,7 @@ def load_wallet() -> pd.DataFrame:
         axis=1,
     )
     df["is_stable_wallet"] = df["half_life_raw"].astype(str).str.upper().eq("STABLE")
-    for col in [
-        "mass_excess_keV",
-        "mass_excess_error",
-        "abundance",
-        "abundance_error",
-        "level_energy",
-        "level_energy_error",
-    ]:
+    for col in ["mass_excess_keV", "abundance", "level_energy"]:
         if col in df.columns:
             df[col] = _to_float(df[col])
     return df
@@ -139,98 +122,14 @@ def load_halflife_chart() -> pd.DataFrame:
     df = pd.read_csv(EXPORT_HL)
     df = df.rename(columns={"z": "Z", "n": "N", "halflife(Seconds)": "half_life_s_chart"})
     df["half_life_s_chart"] = _to_float(df["half_life_s_chart"])
-    # Chart exports can list isomers as duplicate (Z,N); keep first ground-like row
     return df[["Z", "N", "half_life_s_chart"]].drop_duplicates(["Z", "N"], keep="first")
-
-
-def load_q_and_be() -> pd.DataFrame:
-    df = pd.read_csv(EXPORT_QBE)
-    df = df.rename(
-        columns={
-            "z": "Z",
-            "n": "N",
-            "name": "name",
-            "betaMinus": "q_beta_minus_keV",
-            "betaMinusUncertainty": "q_beta_minus_unc",
-            "electronCapture": "q_ec_keV",
-            "electronCaptureUncertainty": "q_ec_unc",
-            "positronEmission": "q_beta_plus_keV",
-            "positronEmissionUncertainty": "q_beta_plus_unc",
-            "bindingEnergy": "be_per_a_keV",
-            "bindingEnergyUncertainty": "be_per_a_unc",
-            "bindingEnergyLDMFit": "be_ldm_residual_keV",
-            "bindingEnergyLDMFitUncertainty": "be_ldm_residual_unc",
-        }
-    )
-    num_cols = [
-        "q_beta_minus_keV",
-        "q_beta_minus_unc",
-        "q_ec_keV",
-        "q_ec_unc",
-        "q_beta_plus_keV",
-        "q_beta_plus_unc",
-        "be_per_a_keV",
-        "be_per_a_unc",
-        "be_ldm_residual_keV",
-        "be_ldm_residual_unc",
-    ]
-    for c in num_cols:
-        df[c] = _to_float(df[c])
-    return df[["Z", "N", "name"] + num_cols].drop_duplicates(["Z", "N"], keep="first")
-
-
-def load_pairing_alpha() -> pd.DataFrame:
-    df = pd.read_csv(EXPORT_PAIR)
-    df = df.rename(
-        columns={
-            "z": "Z",
-            "n": "N",
-            "name": "name_pair",
-            "pairingGap": "pairing_gap_keV",
-            "pairingGapUncertainty": "pairing_gap_unc",
-            "alpha": "q_alpha_keV",
-            "alphaUncertainty": "q_alpha_unc",
-            "deltaAlpha": "delta_q_alpha_keV",
-            "deltaAlphaUncertainty": "delta_q_alpha_unc",
-        }
-    )
-    keep = [
-        "Z",
-        "N",
-        "pairing_gap_keV",
-        "pairing_gap_unc",
-        "q_alpha_keV",
-        "q_alpha_unc",
-        "delta_q_alpha_keV",
-        "delta_q_alpha_unc",
-    ]
-    for c in keep[2:]:
-        df[c] = _to_float(df[c])
-    return df[keep].drop_duplicates(["Z", "N"], keep="first")
-
-
-_MODE_ALIASES = {
-    "B-": "B-",
-    "B+": "B+",
-    "EC": "EC",
-    "EC+B+": "EC+B+",
-    "EC+B+?": "EC+B+",
-    "IT": "IT",
-    "A": "A",
-    "α": "A",
-}
 
 
 def normalize_mode_token(token: str) -> str:
     t = token.strip().upper()
-    t = t.replace("Α", "A")  # greek lookalike
-    # strip trailing ? and spaces
+    t = t.replace("Α", "A")
     t = t.rstrip("?").strip()
-    # NuDat uses B- , EC+B+, a for alpha
     if t.startswith("B-"):
-        # B-, B-N, B-2N, B-A ...
-        if t == "B-" or t.startswith("B-="):
-            return "B-"
         if t.startswith("B-N") or t.startswith("B-2N") or t.startswith("B-3N"):
             return "B-n"
         if t.startswith("B-A"):
@@ -269,7 +168,6 @@ def parse_decay_modes(raw: Optional[str]) -> list[dict]:
         part = part.strip()
         if not part:
             continue
-        # patterns: "B- = 100", "B-n = 16 1", "EC = 100", "B- ~ 100"
         m = re.match(
             r"^(.+?)\s*(?:=|~)\s*([0-9]*\.?[0-9]+)\s*([0-9]*\.?[0-9]+)?\s*$",
             part,
@@ -279,7 +177,6 @@ def parse_decay_modes(raw: Optional[str]) -> list[dict]:
             branching = float(m.group(2))
             channels.append({"mode_code": mode, "branching_pct": branching})
             continue
-        # mode without branching
         mode = normalize_mode_token(part)
         channels.append({"mode_code": mode, "branching_pct": None})
     return channels
@@ -290,7 +187,6 @@ def dominant_mode_class(channels: list[dict], is_stable: bool) -> str:
         return "STABLE"
     if not channels:
         return "UNKNOWN"
-    # Prefer highest branching; if none, first listed
     ranked = sorted(
         channels,
         key=lambda c: (-1 if c["branching_pct"] is None else -c["branching_pct"]),
@@ -329,55 +225,47 @@ def build_decay_channels(wallet: pd.DataFrame) -> pd.DataFrame:
 def build_nuclides() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     wallet = load_wallet()
     hl = load_halflife_chart()
-    qbe = load_q_and_be()
-    pair = load_pairing_alpha()
 
-    # Ground states for chart join / main analysis table
-    gs = wallet[wallet["level_index"] == 0].copy()
-    gs["dominant_mode"] = [
-        dominant_mode_class(parse_decay_modes(raw), bool(stable))
-        for raw, stable in zip(gs["decay_modes_raw"], gs["is_stable_wallet"])
-    ]
-
-    merged = gs.merge(hl, on=["Z", "N"], how="left")
-    merged = merged.merge(qbe, on=["Z", "N"], how="left")
-    merged = merged.merge(pair, on=["Z", "N"], how="left")
-
-    merged["half_life_s"] = merged["half_life_s_chart"].where(
-        merged["half_life_s_chart"].notna(), merged["half_life_s_wallet"]
-    )
-    merged["is_stable"] = merged["is_stable_wallet"] | merged["dominant_mode"].eq("STABLE")
-    merged.loc[merged["is_stable"], "half_life_s"] = pd.NA
-    merged["N_over_Z"] = merged["N"] / merged["Z"].replace(0, pd.NA)
-    if "name" not in merged.columns:
-        merged["name"] = pd.NA
-    merged["name"] = merged["name"].fillna(
-        merged["A"].astype(int).astype(str) + merged["element"].astype(str)
-    )
-
-    # Full states table (including isomers) for nuclear_state
     states = wallet.copy()
+    states["is_resonance"] = (
+        states["decay_width"].notna()
+        & states["half_life_raw"].isna()
+        & ~states["is_stable_wallet"]
+    )
     states["dominant_mode"] = [
         dominant_mode_class(parse_decay_modes(raw), bool(stable))
         for raw, stable in zip(states["decay_modes_raw"], states["is_stable_wallet"])
     ]
     states = states.merge(hl, on=["Z", "N"], how="left")
-    states["half_life_s"] = states.apply(
+    states["is_stable"] = states["is_stable_wallet"] | states["dominant_mode"].eq("STABLE")
+
+    def pick_half_life(row):
+        if row["is_stable"]:
+            return pd.NA
+        if row["level_index"] == 0 and pd.notna(row.get("half_life_s_chart")):
+            return row["half_life_s_chart"]
+        return row["half_life_s_wallet"]
+
+    states["half_life_s"] = states.apply(pick_half_life, axis=1)
+    states["half_life_source"] = states.apply(
         lambda r: (
-            None
-            if r["is_stable_wallet"]
+            "none"
+            if r["is_stable"]
             else (
-                r["half_life_s_chart"]
-                if r["level_index"] == 0 and pd.notna(r["half_life_s_chart"])
-                else r["half_life_s_wallet"]
+                "chart"
+                if r["level_index"] == 0 and pd.notna(r.get("half_life_s_chart"))
+                else ("wallet" if pd.notna(r["half_life_s_wallet"]) else "none")
             )
         ),
         axis=1,
     )
-    states["is_stable"] = states["is_stable_wallet"]
+
+    gs = states[states["level_index"] == 0].copy()
+    gs["name"] = gs["A"].astype(int).astype(str) + gs["element"].astype(str)
+    gs["N_over_Z"] = gs["N"] / gs["Z"].replace(0, pd.NA)
 
     decay_channels = build_decay_channels(wallet)
-    return merged, states, decay_channels
+    return gs, states, decay_channels
 
 
 def write_processed() -> dict[str, Path]:
@@ -394,18 +282,12 @@ def write_processed() -> dict[str, Path]:
         "mass_excess_keV",
         "abundance",
         "half_life_s",
+        "half_life_source",
         "is_stable",
+        "is_resonance",
         "dominant_mode",
         "decay_modes_raw",
         "N_over_Z",
-        "q_beta_minus_keV",
-        "q_ec_keV",
-        "q_beta_plus_keV",
-        "be_per_a_keV",
-        "be_ldm_residual_keV",
-        "pairing_gap_keV",
-        "q_alpha_keV",
-        "delta_q_alpha_keV",
     ]
     nuclides_out = nuclides[nuclide_cols].sort_values(["Z", "A"]).reset_index(drop=True)
 
@@ -420,11 +302,15 @@ def write_processed() -> dict[str, Path]:
         "mass_excess_keV",
         "abundance",
         "half_life_s",
+        "half_life_source",
         "is_stable",
+        "is_resonance",
         "dominant_mode",
         "decay_modes_raw",
     ]
     states_out = states[state_cols].sort_values(["Z", "A", "level_index"]).reset_index(drop=True)
+
+    ch_out = decay_channels[["Z", "A", "N", "level_index", "mode_code", "branching_pct"]]
 
     paths = {
         "nuclides": PROCESSED / "nuclides.csv",
@@ -433,7 +319,7 @@ def write_processed() -> dict[str, Path]:
     }
     nuclides_out.to_csv(paths["nuclides"], index=False)
     states_out.to_csv(paths["nuclear_states"], index=False)
-    decay_channels.to_csv(paths["decay_channels"], index=False)
+    ch_out.to_csv(paths["decay_channels"], index=False)
     return paths
 
 
