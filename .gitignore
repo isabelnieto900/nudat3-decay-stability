@@ -8,3 +8,5 @@ venv/
 mysql_data/
 *.log
 .DS_Store
+guion.md
+docs/presentacion_nudat3.pptx
