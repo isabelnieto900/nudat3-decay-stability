@@ -1,6 +1,5 @@
-# MySQL init note:
-# This script runs once when the mysql_data volume is empty.
-# CREATE DATABASE is harmless if MYSQL_DATABASE=nudat already exists.
+-- NuDat 3 — schema (4 tablas) alineado a la pregunta N/Z vs modo dominante
+-- Init: docker-entrypoint-initdb.d / mysql < schema.sql
 
 CREATE DATABASE IF NOT EXISTS nudat
   CHARACTER SET utf8mb4
@@ -10,8 +9,6 @@ USE nudat;
 
 SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS decay_channel;
-DROP TABLE IF EXISTS nuclide_qvalue;
-DROP TABLE IF EXISTS nuclide_structure;
 DROP TABLE IF EXISTS nuclear_state;
 DROP TABLE IF EXISTS nuclide;
 DROP TABLE IF EXISTS element;
@@ -65,27 +62,5 @@ CREATE TABLE decay_channel (
   PRIMARY KEY (channel_id),
   KEY idx_channel_mode (mode_code),
   CONSTRAINT fk_channel_state FOREIGN KEY (state_id) REFERENCES nuclear_state (state_id)
-    ON DELETE CASCADE
-) ENGINE=InnoDB;
-
-CREATE TABLE nuclide_qvalue (
-  nuclide_id INT UNSIGNED NOT NULL,
-  q_beta_minus_keV DOUBLE NULL,
-  q_ec_keV DOUBLE NULL,
-  q_beta_plus_keV DOUBLE NULL,
-  q_alpha_keV DOUBLE NULL,
-  delta_q_alpha_keV DOUBLE NULL,
-  PRIMARY KEY (nuclide_id),
-  CONSTRAINT fk_qvalue_nuclide FOREIGN KEY (nuclide_id) REFERENCES nuclide (nuclide_id)
-    ON DELETE CASCADE
-) ENGINE=InnoDB;
-
-CREATE TABLE nuclide_structure (
-  nuclide_id INT UNSIGNED NOT NULL,
-  be_per_a_keV DOUBLE NULL COMMENT 'BE/A valle de estabilidad',
-  be_ldm_residual_keV DOUBLE NULL COMMENT '(BE-LDM)/A',
-  pairing_gap_keV DOUBLE NULL,
-  PRIMARY KEY (nuclide_id),
-  CONSTRAINT fk_structure_nuclide FOREIGN KEY (nuclide_id) REFERENCES nuclide (nuclide_id)
     ON DELETE CASCADE
 ) ENGINE=InnoDB;
