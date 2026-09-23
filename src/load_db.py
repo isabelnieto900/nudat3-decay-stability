@@ -1,9 +1,9 @@
-"""Load processed CSVs into MySQL.
+"""Load processed CSVs into MySQL (4 tables: element, nuclide, nuclear_state, decay_channel).
 
 Run inside the Jupyter container (MYSQL_HOST=mysql) or from the host
 (MYSQL_HOST=127.0.0.1) after `docker compose up`.
 
-Does NOT re-run cleaning; reads data/processed/ as produced by notebooks/02_clean_etl.ipynb.
+Reads data/processed/ as produced by notebooks/02_clean_etl.ipynb.
 """
 
 from __future__ import annotations
@@ -46,8 +46,6 @@ def load_all() -> None:
         conn.execute(text("SET FOREIGN_KEY_CHECKS=0"))
         for table in [
             "decay_channel",
-            "nuclide_qvalue",
-            "nuclide_structure",
             "nuclear_state",
             "nuclide",
             "element",
@@ -63,7 +61,6 @@ def load_all() -> None:
         )
         elements.to_sql("element", conn, if_exists="append", index=False)
 
-        # One nuclide row per (Z,A): prefer name from nuclides (GS chart join)
         base = states[["Z", "A", "N", "element"]].drop_duplicates(["Z", "A"])
         nuclide_rows = base.merge(
             nuclides[["Z", "A", "name"]], on=["Z", "A"], how="left"
@@ -110,39 +107,12 @@ def load_all() -> None:
             "decay_channel", conn, if_exists="append", index=False
         )
 
-        qv = nuclides.merge(id_map, on=["Z", "A"], how="inner")
-        qv[
-            [
-                "nuclide_id",
-                "q_beta_minus_keV",
-                "q_ec_keV",
-                "q_beta_plus_keV",
-                "q_alpha_keV",
-                "delta_q_alpha_keV",
-            ]
-        ].to_sql("nuclide_qvalue", conn, if_exists="append", index=False)
-
-        struct = nuclides.merge(id_map, on=["Z", "A"], how="inner")
-        struct[
-            [
-                "nuclide_id",
-                "be_per_a_keV",
-                "be_ldm_residual_keV",
-                "pairing_gap_keV",
-            ]
-        ].to_sql("nuclide_structure", conn, if_exists="append", index=False)
-
-    print("Load complete.")
+    print("Load complete (4 tables).")
     print("MYSQL_HOST =", os.getenv("MYSQL_HOST", "127.0.0.1"))
     with engine.connect() as conn:
-        for table in [
-            "element",
-            "nuclide",
-            "nuclear_state",
-            "decay_channel",
-            "nuclide_qvalue",
-            "nuclide_structure",
-        ]:
+        tables = [r[0] for r in conn.execute(text("SHOW TABLES")).fetchall()]
+        print("Tables:", tables)
+        for table in ["element", "nuclide", "nuclear_state", "decay_channel"]:
             n = conn.execute(text(f"SELECT COUNT(*) FROM {table}")).scalar()
             print(f"  {table}: {n}")
 
