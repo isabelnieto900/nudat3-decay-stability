@@ -366,7 +366,7 @@ Z,N,A,element,level_index,level_energy_keV,spin_parity,mass_excess_keV,abundance
 20,25,45,Ca,0,0.0,7/2-,-40812.23,,14049504.000000002,chart,False,False,B-,B- = 100 
 20,26,46,Ca,0,0.0,0+,-43139.61,0.004,,none,True,False,STABLE,
 20,27,47,Ca,0,0.0,7/2-,-42344.665,,391910.4,chart,False,False,B-,B- = 100 
-20,28,48,Ca,0,0.0,0+,-44224.868,0.187,1.7672256e+27,chart,False,False,OTHER,"B-?,2B- = 0 "
+20,28,48,Ca,0,0.0,0+,-44224.868,0.187,1.7672256e+27,chart,False,False,B-,"B-?,2B- = 0 "
 20,29,49,Ca,0,0.0,3/2-,-41300.003,,523.08,chart,False,False,B-,B- = 100 
 20,30,50,Ca,0,0.0,0+,-39589.23,,13.45,chart,False,False,B-,B- = 100 
 20,31,51,Ca,0,0.0,3/2(-),-36332.31,,10.0,chart,False,False,B-,"B- = 100,B-n?"
@@ -1918,7 +1918,7 @@ Z,N,A,element,level_index,level_energy_keV,spin_parity,mass_excess_keV,abundance
 55,80,135,Cs,0,0.0,7/2+,-87581.956,,41971608000000.0,chart,False,False,B-,B- = 100 
 55,80,135,Cs,1,1632.9,19/2-,-85949.05600000001,,3180.0,wallet,False,False,IT,IT = 100 
 55,81,136,Cs,0,0.0,5+,-86338.855,,1124064.0,chart,False,False,B-,B- = 100 
-55,81,136,Cs,1,517.9,8-,-85820.955,,17.5,wallet,False,False,IT,"B-?,IT = 0 "
+55,81,136,Cs,1,517.9,8-,-85820.955,,17.5,wallet,False,False,B-,"B-?,IT = 0 "
 55,82,137,Cs,0,0.0,7/2+,-86545.772,,946948903.2,chart,False,False,B-,B- = 100 
 55,83,138,Cs,0,0.0,3-,-82887.028,,1948.8,chart,False,False,B-,B- = 100 
 55,83,138,Cs,1,79.9,6-,-82807.12800000001,,174.60000000000002,wallet,False,False,B-,"B- = 18.5 +3-2.5,IT = 81.5 +2.5-3"
@@ -2267,7 +2267,7 @@ Z,N,A,element,level_index,level_energy_keV,spin_parity,mass_excess_keV,abundance
 62,105,167,Sm,0,0.0,,-35330.0,,0.334,chart,False,False,B-,"B- = 100,B-n = 16 "
 62,106,168,Sm,0,0.0,0+,-31640.0,,0.353,chart,False,False,B-,"B- = 100,B-n = 21 "
 63,67,130,Eu,0,0.0,(1+),-33513.0,,0.0009,chart,False,False,OTHER,p ~ 100 
-63,68,131,Eu,0,0.0,3/2+,-39464.0,,0.0178,chart,False,False,OTHER,"p = 0 ,EC+B+?"
+63,68,131,Eu,0,0.0,3/2+,-39464.0,,0.0178,chart,False,False,EC_BP,"p = 0 ,EC+B+?"
 63,69,132,Eu,0,0.0,,-42200.0,,,none,False,False,EC_BP,"ECp?,EC+B+?"
 63,71,134,Eu,0,0.0,,-49800.0,,0.5,chart,False,False,EC_BP,"ECp = 0 ,EC+B+ = 100 "
 63,72,135,Eu,0,0.0,,-54148.0,,1.5,chart,False,False,EC_BP,"ECp?,EC+B+ = 100 "
@@ -2667,7 +2667,7 @@ Z,N,A,element,level_index,level_energy_keV,spin_parity,mass_excess_keV,abundance
 71,84,155,Lu,1,61.0,1/2+,-42484.056,,0.138,wallet,False,False,ALPHA,"a = 76 16,EC+B+ = 24 16"
 71,85,156,Lu,0,0.0,(2)-,-43699.55,,0.494,chart,False,False,ALPHA,a ~ 100 
 71,85,156,Lu,1,0.0,(10+),-43699.55,,0.198,wallet,False,False,ALPHA,a = 100
-71,86,157,Lu,0,0.0,"(1/2+),(3/2+)",-46439.818,,7.6,chart,False,False,ALPHA,"a = 0 ,EC+B+?"
+71,86,157,Lu,0,0.0,"(1/2+),(3/2+)",-46439.818,,7.6,chart,False,False,EC_BP,"a = 0 ,EC+B+?"
 71,86,157,Lu,1,26.5,(11/2-),-46413.318,,4.79,wallet,False,False,EC_BP,"a = 6 2,EC+B+ = 94 2"
 71,87,158,Lu,0,0.0,(2)-,-47212.2,,10.6,chart,False,False,EC_BP,"a = 0.91 0.2,EC+B+ = 99.09 0.2"
 71,88,159,Lu,0,0.0,,-49708.609,,12.1,chart,False,False,EC_BP,EC+B+ = 100 
@@ -2772,8 +2772,8 @@ Z,N,A,element,level_index,level_energy_keV,spin_parity,mass_excess_keV,abundance
 73,85,158,Ta,0,0.0,(2-),-31118.0,,0.049,chart,False,False,ALPHA,"a ~ 100 ,EC+B+?"
 73,86,159,Ta,0,0.0,1/2+,-34439.157,,1.04,chart,False,False,EC_BP,"a = 34 5,EC+B+ = 66 5"
 73,86,159,Ta,1,64.0,11/2-,-34375.157,,0.553,wallet,False,False,ALPHA,"a = 55 1,EC+B+ = 45 1"
-73,87,160,Ta,0,0.0,,-35823.7,,1.55,chart,False,False,ALPHA,"a = 0 ,EC+B+?"
-73,87,160,Ta,1,0.0,,-35823.7,,1.7,wallet,False,False,ALPHA,"a = 0 ,EC+B+?"
+73,87,160,Ta,0,0.0,,-35823.7,,1.55,chart,False,False,EC_BP,"a = 0 ,EC+B+?"
+73,87,160,Ta,1,0.0,,-35823.7,,1.7,wallet,False,False,EC_BP,"a = 0 ,EC+B+?"
 73,88,161,Ta,0,0.0,(1/2+),-38778.575,,3.09,chart,False,False,ALPHA,"a?,EC+B+?"
 73,88,161,Ta,1,95.0,(11/2-),-38683.575,,3.09,wallet,False,False,EC_BP,"a = 7 3,EC+B+ = 93 3"
 73,89,162,Ta,0,0.0,,-39781.405,,3.56,chart,False,False,EC_BP,"a = 0.074 0.01,EC+B+ = 99.926 0.01"
@@ -2872,7 +2872,7 @@ Z,N,A,element,level_index,level_energy_keV,spin_parity,mass_excess_keV,abundance
 75,87,162,Re,1,173.0,(9+),-22280.0,,0.076,wallet,False,False,ALPHA,"a = 91 5,EC+B+ = 9 5"
 75,88,163,Re,0,0.0,1/2+,-26002.253,,0.39,chart,False,False,EC_BP,"a = 32 3,EC+B+ = 68 3"
 75,88,163,Re,1,115.0,11/2-,-25887.253,,0.214,wallet,False,False,ALPHA,"a = 66 4,EC+B+ = 34 4"
-75,89,164,Re,0,0.0,(2)-,-27472.441,,0.72,chart,False,False,ALPHA,"a = 0 ,EC+B+?"
+75,89,164,Re,0,0.0,(2)-,-27472.441,,0.72,chart,False,False,EC_BP,"a = 0 ,EC+B+?"
 75,89,164,Re,1,0.0,(9+),-27472.441,,0.86,wallet,False,False,EC_BP,"a = 3 1,EC+B+ = 97 1"
 75,90,165,Re,0,0.0,(1/2+),-30659.353,,1.6,chart,False,False,EC_BP,"a = 14 8,EC+B+ = 86 8"
 75,90,165,Re,1,50.0,(11/2-),-30609.353,,1.74,wallet,False,False,EC_BP,"a = 13 1,EC+B+ = 87 1"
@@ -2881,7 +2881,7 @@ Z,N,A,element,level_index,level_energy_keV,spin_parity,mass_excess_keV,abundance
 75,92,167,Re,1,128.0,(1/2+),-34706.0,,3.4,wallet,False,False,ALPHA,a ~ 100 
 75,93,168,Re,0,0.0,(7+),-35794.889,,4.4,chart,False,False,EC_BP,"a ~ 0.005 ,EC+B+ ~ 99.995 "
 75,94,169,Re,0,0.0,(9/2-),-38409.247,,8.1,chart,False,False,EC_BP,"a = 0.005 0.004,EC+B+ = 99.995 0.004"
-75,94,169,Re,1,187.0,"(1/2+),(3/2+)",-38222.247,,15.1,wallet,False,False,ALPHA,"EC+B+?,a ~ 0.2 ,IT?"
+75,94,169,Re,1,187.0,"(1/2+),(3/2+)",-38222.247,,15.1,wallet,False,False,EC_BP,"EC+B+?,a ~ 0.2 ,IT?"
 75,95,170,Re,0,0.0,"(6),(7),(8),(9)",-38903.996,,9.2,chart,False,False,EC_BP,EC+B+ = 100 
 75,95,170,Re,1,64.0,(5+),-38839.996,,9.2,wallet,False,False,IT,"IT?,EC+B+?"
 75,96,171,Re,0,0.0,(9/2-),-41250.285,,15.2,chart,False,False,EC_BP,EC+B+ = 100 
@@ -3097,7 +3097,7 @@ Z,N,A,element,level_index,level_energy_keV,spin_parity,mass_excess_keV,abundance
 79,94,173,Au,0,0.0,(1/2+),-12832.017,,0.0263,chart,False,False,OTHER,"p?,EC+B+?,a = 94 +6-19"
 79,94,173,Au,1,214.0,(11/2-),-12618.017,,0.012199999999999999,wallet,False,False,OTHER,"p?,EC+B+?,a = 92 +8-13"
 79,95,174,Au,0,0.0,(3-),-14058.0,,0.139,chart,False,False,ALPHA,"a = 90 6,EC+B+ = 10 6"
-79,95,174,Au,1,0.0,(9+),-14058.0,,0.162,wallet,False,False,ALPHA,"a = 0 ,EC+B+?"
+79,95,174,Au,1,0.0,(9+),-14058.0,,0.162,wallet,False,False,EC_BP,"a = 0 ,EC+B+?"
 79,96,175,Au,0,0.0,(1/2+),-17403.686,,0.201,chart,False,False,ALPHA,"a = 90 7,EC+B+ = 10 7"
 79,96,175,Au,1,0.0,(11/2-),-17403.686,,0.137,wallet,False,False,ALPHA,"a = 90 3,EC+B+ = 10 3"
 79,97,176,Au,0,0.0,"(2-),(3-)",-18520.967,,1.05,chart,False,False,ALPHA,"a = 58 5,EC+B+ = 42 5"
@@ -3218,17 +3218,17 @@ Z,N,A,element,level_index,level_energy_keV,spin_parity,mass_excess_keV,abundance
 81,100,181,Tl,0,0.0,1/2+,-12798.749,,2.9,chart,False,False,EC_BP,"a = 8.6 0.6,EC+B+ = 91.4 0.6"
 81,101,182,Tl,0,0.0,(4-),-13327.213,,1.9,chart,False,False,EC_BP,"a = 0.5 ,EC+B+ = 99.5 "
 81,101,182,Tl,1,0.0,(7+),-13327.213,,3.1,wallet,False,False,EC_BP,"a = 2.5 2.5,EC+B+ = 97.5 2.5"
-81,102,183,Tl,0,0.0,1/2+,-16587.261,,6.9,chart,False,False,EC_BP,"a?,EC+B+ = 0 "
+81,102,183,Tl,0,0.0,1/2+,-16587.261,,6.9,chart,False,False,ALPHA,"a?,EC+B+ = 0 "
 81,103,184,Tl,0,0.0,(2-),-16883.355,,9.5,chart,False,False,EC_BP,"a = 1.22 0.3,EC+B+ = 98.78 0.3"
 81,103,184,Tl,1,0.0,(7+),-16883.355,,10.1,wallet,False,False,EC_BP,"a = 0.47 0.06,EC+B+ = 99.53 0.06"
 81,103,184,Tl,2,0.0,(10-),-16883.355,,0.0471,wallet,False,False,IT,"IT = 99.911 0.019,a = 0.089 0.019"
 81,104,185,Tl,0,0.0,1/2+,-19757.745,,19.5,chart,False,False,EC_BP,EC+B+ ~ 100 
 81,104,185,Tl,1,454.8,9/2-,-19302.945,,1.8,wallet,False,False,IT,IT ~ 100 
-81,105,186,Tl,0,0.0,(2-),-19882.94,,3.4,chart,False,False,ALPHA,"a = 0 ,EC+B+?"
+81,105,186,Tl,0,0.0,(2-),-19882.94,,3.4,chart,False,False,EC_BP,"a = 0 ,EC+B+?"
 81,105,186,Tl,1,77.0,(7+),-19805.94,,27.6,wallet,False,False,EC_BP,"a ~ 0.006 ,EC+B+ ~ 99.994 "
 81,105,186,Tl,2,405.0,(10-),-19477.94,,3.4,wallet,False,False,IT,"IT = 94.1 ,EC+B+ = 5.9 "
 81,106,187,Tl,0,0.0,(1/2+),-22444.592,,51.0,chart,False,False,EC_BP,EC+B+ = 100
-81,106,187,Tl,1,334.0,(9/2-),-22110.592,,15.6,wallet,False,False,ALPHA,"EC+B+?,a = 0.15 0.05,IT?"
+81,106,187,Tl,1,334.0,(9/2-),-22110.592,,15.6,wallet,False,False,EC_BP,"EC+B+?,a = 0.15 0.05,IT?"
 81,107,188,Tl,0,0.0,(2-),-22336.403,,71.0,chart,False,False,EC_BP,EC+B+ = 100 
 81,107,188,Tl,1,35.0,7+,-22301.403,,71.5,wallet,False,False,EC_BP,EC+B+ = 100 
 81,108,189,Tl,0,0.0,(1/2+),-24616.105,,138.0,chart,False,False,EC_BP,EC+B+ = 100 
@@ -3506,8 +3506,8 @@ Z,N,A,element,level_index,level_energy_keV,spin_parity,mass_excess_keV,abundance
 86,113,199,Rn,0,0.0,(3/2-),-1559.846,,0.6,chart,False,False,ALPHA,a ~ 100 
 86,113,199,Rn,1,222.0,(13/2+),-1337.846,,0.312,wallet,False,False,ALPHA,a ~ 100 
 86,114,200,Rn,0,0.0,0+,-4000.454,,1.03,chart,False,False,OTHER,"a = 86 +14-4,EC+B+ = 14 +4-14"
-86,115,201,Rn,0,0.0,(3/2-),-4107.413,,7.0,chart,False,False,ALPHA,"a = 0 ,EC+B+?"
-86,115,201,Rn,1,248.0,(13/2+),-3859.413,,3.8,wallet,False,False,ALPHA,"a = 0 ,EC+B+?"
+86,115,201,Rn,0,0.0,(3/2-),-4107.413,,7.0,chart,False,False,EC_BP,"a = 0 ,EC+B+?"
+86,115,201,Rn,1,248.0,(13/2+),-3859.413,,3.8,wallet,False,False,EC_BP,"a = 0 ,EC+B+?"
 86,116,202,Rn,0,0.0,0+,-6274.561,,9.75,chart,False,False,ALPHA,"a = 78 8,EC+B+ = 22 8"
 86,117,203,Rn,0,0.0,3/2-,-6184.045,,44.0,chart,False,False,ALPHA,"a = 66 9,EC+B+ = 34 9"
 86,117,203,Rn,1,362.0,13/2+,-5822.045,,26.9,wallet,False,False,ALPHA,"a = 75 10,EC+B+ = 25 10"
@@ -3839,14 +3839,14 @@ Z,N,A,element,level_index,level_energy_keV,spin_parity,mass_excess_keV,abundance
 96,153,249,Cm,0,0.0,1/2+,70750.696,,3849.000000000001,chart,False,False,B-,B- = 100
 96,154,250,Cm,0,0.0,0+,72989.588,,261928080000.0,chart,False,False,OTHER,"f ~ 74 ,a?,B-?"
 96,155,251,Cm,0,0.0,"(1/2+),(3/2+)",76647.981,,1008.0,chart,False,False,B-,B- = 100
-97,136,233,Bk,0,0.0,,52771.0,,21.0,chart,False,False,ALPHA,"a = 0 ,EC+B+?"
+97,136,233,Bk,0,0.0,,52771.0,,21.0,chart,False,False,EC_BP,"a = 0 ,EC+B+?"
 97,137,234,Bk,0,0.0,,53395.0,,19.0,chart,False,False,ALPHA,"a = 83 ,EC+B+ = 20 "
 97,139,236,Bk,0,0.0,"(4+),(6-)",53542.0,,22.0,chart,False,False,EC_BP,"ECf = 4 2,EC+B+ ~ 83 ,a ~ 17 "
 97,140,237,Bk,0,0.0,,53210.0,,,none,False,False,ALPHA,"a?,EC+B+?"
 97,141,238,Bk,0,0.0,,54216.0,,144.0,chart,False,False,EC_BP,"ECf = 0.048 0.02,EC+B+ = 100"
 97,142,239,Bk,0,0.0,"(3/2-),(7/2+)",54250.0,,,none,False,False,EC_BP,"f = 1 ,EC+B+ = 100,a = 1 "
 97,143,240,Bk,0,0.0,,55664.0,,288.0,chart,False,False,EC_BP,"ECf = 0.002 0.0013,EC+B+ = 100"
-97,144,241,Bk,0,0.0,(7/2+),55981.0,,276.0,chart,False,False,EC_BP,"a?,EC+B+ = 0 "
+97,144,241,Bk,0,0.0,(7/2+),55981.0,,276.0,chart,False,False,ALPHA,"a?,EC+B+ = 0 "
 97,145,242,Bk,0,0.0,,57752.0,,420.0,chart,False,False,EC_BP,"f = 0.03 ,EC+B+ ~ 100 ,a = 1 "
 97,146,243,Bk,0,0.0,(3/2-),58689.629,,16560.0,chart,False,False,EC_BP,"a ~ 0.15 ,EC+B+ ~ 99.85 "
 97,147,244,Bk,0,0.0,(4-),60713.825,,18072.0,chart,False,False,EC_BP,"a = 0.006 0.003,EC+B+ = 99.994 0.003"
@@ -3905,7 +3905,7 @@ Z,N,A,element,level_index,level_energy_keV,spin_parity,mass_excess_keV,abundance
 100,142,242,Fm,0,0.0,0+,68400.0,,0.0008,chart,False,False,OTHER,f = 100
 100,143,243,Fm,0,0.0,(7/2-),69316.0,,0.231,chart,False,False,ALPHA,"f = 9 3,EC+B+ = 10 ,a = 91 3"
 100,144,244,Fm,0,0.0,0+,68964.0,,0.00312,chart,False,False,OTHER,"f = 97 ,EC+B+ = 2 ,a = 1 "
-100,145,245,Fm,0,0.0,,70192.0,,5.4,chart,False,False,OTHER,"f = 0.3 ,EC+B+ = 11.5 +6.8-5,a = 88.5 +5-6"
+100,145,245,Fm,0,0.0,,70192.0,,5.4,chart,False,False,EC_BP,"f = 0.3 ,EC+B+ = 11.5 +6.8-5,a = 88.5 +5-6"
 100,146,246,Fm,0,0.0,0+,70191.187,,1.53,chart,False,False,ALPHA,"f = 6.4 0.4,EC+B+ = 1.3 ,a = 93.6 0.4"
 100,147,247,Fm,0,0.0,(7/2+),71672.0,,31.0,chart,False,False,ALPHA,"a ~ 64 ,EC+B+ ~ 36 "
 100,147,247,Fm,1,45.0,(1/2+),71717.0,,5.1,wallet,False,False,ALPHA,"IT = 12 2,a = 88 2"
@@ -3948,7 +3948,7 @@ Z,N,A,element,level_index,level_energy_keV,spin_parity,mass_excess_keV,abundance
 101,159,260,Md,0,0.0,,96550.0,,2747520.0,chart,False,False,OTHER,"EC = 23 ,f = 42 ,a = 25 ,B- = 10 "
 102,147,249,No,0,0.0,(7/2+),81787.0,,0.0378,chart,False,False,ALPHA,"a ~ 100 ,f = 0.23 "
 102,148,250,No,0,0.0,0+,81566.0,,4.5999999999e-06,chart,False,False,OTHER,f ~ 100 
-102,149,251,No,0,0.0,(7/2+),82849.0,,0.8,chart,False,False,EC_BP,"f = 0.0014 +0.0031-0.0012,EC+B+ = 0 ,a = 91 +9-22"
+102,149,251,No,0,0.0,(7/2+),82849.0,,0.8,chart,False,False,OTHER,"f = 0.0014 +0.0031-0.0012,EC+B+ = 0 ,a = 91 +9-22"
 102,149,251,No,1,106.0,(1/2+),82955.0,,1.0,wallet,False,False,ALPHA,a ~ 100 
 102,150,252,No,0,0.0,0+,82871.37,,2.45,chart,False,False,ALPHA,"f = 33 0.8,EC+B+ = 1.7 0.9,a = 65.3 0.5"
 102,150,252,No,1,1254.6,(8-),84125.97,,0.109,wallet,False,False,IT,IT = 100
@@ -3968,7 +3968,7 @@ Z,N,A,element,level_index,level_energy_keV,spin_parity,mass_excess_keV,abundance
 103,150,253,Lr,0,0.0,(7/2-),88523.471,,0.65,chart,False,False,ALPHA,"a ~ 99 ,f = 1 0.6"
 103,150,253,Lr,1,0.0,(1/2-),88523.471,,1.44,wallet,False,False,ALPHA,"a ~ 88 ,f = 12 3"
 103,151,254,Lr,0,0.0,(4+),89645.887,,11.9,chart,False,False,ALPHA,"f = 0.1 ,EC+B+ = 28.3 1.9,a = 71.7 1.9"
-103,151,254,Lr,1,108.0,(1-),89753.887,,20.3,wallet,False,False,ALPHA,"EC+B+?,a = 0 ,IT?"
+103,151,254,Lr,1,108.0,(1-),89753.887,,20.3,wallet,False,False,EC_BP,"EC+B+?,a = 0 ,IT?"
 103,152,255,Lr,0,0.0,(1/2-),89947.305,,31.1,chart,False,False,ALPHA,"f = 0.1 ,EC+B+ = 0.3 0.1,a = 99.7 0.1"
 103,152,255,Lr,1,38.0,(7/2-),89985.305,,2.54,wallet,False,False,IT,"IT ~ 60 ,a ~ 40 "
 103,153,256,Lr,0,0.0,"(0-),(3-)",91746.603,,27.9,chart,False,False,ALPHA,"a ~ 85 ,EC+B+ ~ 15 "
