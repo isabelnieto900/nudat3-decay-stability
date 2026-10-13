@@ -20,6 +20,23 @@ Análisis de datos nucleares de [NuDat 3](https://www.nndc.bnl.gov/nudat3/) (NND
 | **jupyter** | 8888 | token `nudat` → http://localhost:8888 |
 | **streamlit** | 8501 | http://localhost:8501 |
 
+### Inicio rápido
+
+```bash
+./run_app.sh
+```
+
+Comprueba Docker, construye y levanta los contenedores, carga `data/processed/` en MySQL si la base está vacía y abre la app en http://localhost:8501.
+
+| Opción | Efecto |
+|--------|--------|
+| `--reload-data` | Fuerza la recarga de los CSV en MySQL |
+| `--reset` | Borra el volumen de MySQL y reconstruye desde cero |
+| `--no-browser` | No abre el navegador |
+| `--stop` | Detiene los contenedores (los datos se conservan) |
+
+### Paso a paso (equivalente manual)
+
 ```bash
 docker compose up -d --build
 docker compose exec jupyter python -m src.load_db
