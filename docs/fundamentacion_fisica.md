@@ -1,6 +1,6 @@
 # Investigación del fenómeno y fundamentación física
 
-Documento correspondiente a la **primera etapa** del parcial: comprender el fenómeno, magnitudes, unidades, origen de los datos y pregunta científica.
+Comprender el fenómeno, magnitudes, unidades, origen de los datos y pregunta científica.
 
 ---
 

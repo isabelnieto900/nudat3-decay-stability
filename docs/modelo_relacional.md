@@ -1,7 +1,5 @@
 # Modelo relacional — NuDat (N/Z vs modo dominante)
 
-Diseño de **4 tablas** alineado a la pregunta científica:
-
 > ¿Cómo se relaciona la razón $N/Z$ con el modo de desintegración dominante ($\beta^-$ frente a $\beta^+$/EC) en los estados base?
 
 Fuente de carga: `data/processed/` → `src/load_db.py`.
