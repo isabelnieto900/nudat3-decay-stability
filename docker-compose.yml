@@ -1,8 +1,9 @@
-# NuDat: MySQL + JupyterLab on a shared Docker network
+# NuDat: MySQL + JupyterLab + Streamlit on a shared Docker network
 #
 # Usage:
 #   docker compose up -d --build
 #   # Jupyter: http://localhost:8888  (token: nudat)
+#   # Streamlit: http://localhost:8501
 #   # MySQL:   localhost:3306  user/pass/db: nudat/nudat/nudat
 #   # From Jupyter terminal: python -m src.load_db
 
@@ -60,6 +61,30 @@ services:
       --ServerApp.root_dir=/home/jovyan/work
       --IdentityProvider.token=nudat
       --ServerApp.ip=0.0.0.0
+
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: nudat-streamlit
+    restart: unless-stopped
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: "3306"
+      MYSQL_USER: nudat
+      MYSQL_PASSWORD: nudat
+      MYSQL_DATABASE: nudat
+      PYTHONPATH: /app
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./:/app
+    working_dir: /app
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - nudat_net
 
 volumes:
   mysql_data:

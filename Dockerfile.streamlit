@@ -1,0 +1,19 @@
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app
+
+# Solo lo necesario para la app (sin JupyterLab ni matplotlib/seaborn)
+RUN pip install --no-cache-dir \
+    "pandas>=2.0" \
+    "numpy>=1.24" \
+    "SQLAlchemy>=2.0" \
+    "PyMySQL>=1.1" \
+    "streamlit>=1.50" \
+    "plotly>=5.20"
+
+WORKDIR /app
+EXPOSE 8501
+
+CMD ["streamlit", "run", "app/Inicio.py", "--server.address=0.0.0.0", "--server.port=8501", "--server.headless=true"]
