@@ -26,22 +26,44 @@ Análisis de datos nucleares de [NuDat 3](https://www.nndc.bnl.gov/nudat3/) (NND
 ./run_app.sh
 ```
 
-Comprueba Docker, construye y levanta los contenedores, carga `data/processed/` en MySQL si la base está vacía y abre la app en http://localhost:8501.
+Comprueba Docker, **baja las imágenes de Docker Hub**, levanta los contenedores, carga `data/processed/` en MySQL si la base está vacía y abre la app en http://localhost:8501.
 
 | Opción | Efecto |
 |--------|--------|
+| `--build` | Reconstruye las imágenes localmente (en vez de solo pull) |
 | `--reload-data` | Fuerza la recarga de los CSV en MySQL |
 | `--reset` | Borra el volumen de MySQL y reconstruye desde cero |
 | `--no-browser` | No abre el navegador |
 | `--stop` | Detiene los contenedores (los datos se conservan) |
 
+### En otro PC
+
+1. Instalar [Docker Desktop](https://docs.docker.com/get-docker/).
+2. Clonar el repo (hace falta el código y `data/processed/`):
+
+```bash
+git clone https://github.com/isabelnieto900/nudat3-decay-stability.git
+cd nudat3-decay-stability
+./run_app.sh
+```
+
+Las imágenes de Jupyter y Streamlit se descargan de Docker Hub:
+
+| Imagen | Hub |
+|--------|-----|
+| Jupyter | [isabeln9/nudat3-jupyter](https://hub.docker.com/r/isabeln9/nudat3-jupyter) |
+| Streamlit | [isabeln9/nudat3-streamlit](https://hub.docker.com/r/isabeln9/nudat3-streamlit) |
+| MySQL | `mysql:8.0` (oficial) |
+
 ### Paso a paso (equivalente manual)
 
 ```bash
-docker compose up -d --build
+docker compose pull
+docker compose up -d
 docker compose exec jupyter python -m src.load_db
 ```
 
+Reconstruir localmente: `docker compose up -d --build`.  
 Schema limpio desde cero: `docker compose down -v` y volver a `up` (init con `sql/schema.sql`).
 
 ## Notebooks

@@ -2,7 +2,8 @@
 # Instala y abre la app NuDat 3 (MySQL + JupyterLab + Streamlit en Docker).
 #
 # Uso:
-#   ./run_app.sh                 construye, levanta, carga datos si hace falta y abre la app
+#   ./run_app.sh                 baja imágenes de Docker Hub, levanta, carga datos y abre la app
+#   ./run_app.sh --build         reconstruye las imágenes localmente (en vez de solo pull)
 #   ./run_app.sh --reload-data   fuerza la recarga de data/processed/ en MySQL
 #   ./run_app.sh --reset         borra el volumen de MySQL y reconstruye todo desde cero
 #   ./run_app.sh --no-browser    no abre el navegador
@@ -20,6 +21,7 @@ reload_data=false
 reset=false
 open_browser=true
 stop=false
+do_build=false
 
 for arg in "$@"; do
   case "$arg" in
@@ -27,7 +29,8 @@ for arg in "$@"; do
     --reset) reset=true ;;
     --no-browser) open_browser=false ;;
     --stop) stop=true ;;
-    -h|--help) sed -n '2,9p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    --build) do_build=true ;;
+    -h|--help) sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "Opción desconocida: $arg (usa --help)"; exit 1 ;;
   esac
 done
@@ -65,15 +68,26 @@ if $stop; then
   exit 0
 fi
 
-# --- 2. Construir y levantar -------------------------------------------------
+# --- 2. Imágenes y contenedores ----------------------------------------------
 if $reset; then
   info "Reset: eliminando contenedores y volumen de MySQL"
   "${compose[@]}" down -v
   reload_data=true
 fi
 
-info "Construyendo imágenes y levantando contenedores (la primera vez puede tardar varios minutos)"
-"${compose[@]}" up -d --build
+if $do_build; then
+  info "Construyendo imágenes localmente y levantando contenedores"
+  "${compose[@]}" up -d --build
+else
+  info "Descargando imágenes de Docker Hub (isabeln9/nudat3-*)"
+  if ! "${compose[@]}" pull; then
+    info "Pull falló; construyendo localmente como respaldo"
+    "${compose[@]}" up -d --build
+  else
+    info "Levantando contenedores"
+    "${compose[@]}" up -d
+  fi
+fi
 
 # --- 3. Esperar a MySQL -------------------------------------------------------
 info "Esperando a que MySQL esté listo"
@@ -126,5 +140,6 @@ cat <<EOF
   JupyterLab    : $JUPYTER_URL
   MySQL         : localhost:3306  (nudat / nudat, base nudat)
 
+  Imágenes Hub  : isabeln9/nudat3-jupyter , isabeln9/nudat3-streamlit
   Detener todo  : ./run_app.sh --stop
 EOF

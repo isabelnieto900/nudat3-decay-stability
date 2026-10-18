@@ -1,11 +1,17 @@
 # NuDat: MySQL + JupyterLab + Streamlit on a shared Docker network
 #
+# Images (Docker Hub):
+#   isabeln9/nudat3-jupyter:latest
+#   isabeln9/nudat3-streamlit:latest
+#   mysql:8.0  (oficial)
+#
 # Usage:
-#   docker compose up -d --build
+#   ./run_app.sh                 # pull + up + carga datos + abre la app
+#   docker compose pull && docker compose up -d
+#   docker compose up -d --build # reconstruir localmente y etiquetar con los nombres de Hub
 #   # Jupyter: http://localhost:8888  (token: nudat)
 #   # Streamlit: http://localhost:8501
 #   # MySQL:   localhost:3306  user/pass/db: nudat/nudat/nudat
-#   # From Jupyter terminal: python -m src.load_db
 
 services:
   mysql:
@@ -32,6 +38,7 @@ services:
       start_period: 20s
 
   jupyter:
+    image: isabeln9/nudat3-jupyter:latest
     build:
       context: .
       dockerfile: Dockerfile.jupyter
@@ -63,6 +70,7 @@ services:
       --ServerApp.ip=0.0.0.0
 
   streamlit:
+    image: isabeln9/nudat3-streamlit:latest
     build:
       context: .
       dockerfile: Dockerfile.streamlit
