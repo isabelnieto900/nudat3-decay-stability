@@ -1,6 +1,7 @@
 # Dependencias de la app Streamlit (imagen Docker).
 # Fijadas para builds reproducibles (metodología taller Docker Hub).
-streamlit==1.50.0
+# >=1.51: width= es parámetro real (en 1.50 caía en **kwargs y avisaba deprecación)
+streamlit==1.52.2
 pandas==2.2.3
 numpy==2.1.3
 SQLAlchemy==2.0.36
