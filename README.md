@@ -17,6 +17,14 @@ Análisis de datos nucleares de [NuDat 3](https://www.nndc.bnl.gov/nudat3/) (NND
 
 Requisitos: [Docker Desktop](https://docs.docker.com/get-docker/) (Windows / macOS) o Docker Engine + Compose (Linux), con el motor en marcha.
 
+En **Linux**, si `sudo docker run hello-world` funciona pero `./run_app.sh` no, suele ser que tu usuario no está en el grupo `docker`. El script intentará usar `sudo docker`; para no necesitarlo:
+
+```bash
+sudo usermod -aG docker "$USER"
+newgrp docker   # o cierra sesión y vuelve a entrar
+./run_app.sh
+```
+
 ```bash
 git clone https://github.com/isabelnieto900/nudat3-decay-stability.git
 cd nudat3-decay-stability

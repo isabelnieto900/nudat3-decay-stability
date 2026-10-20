@@ -41,12 +41,30 @@ fail() { printf '\033[1;31m✘ %s\033[0m\n' "$*" >&2; exit 1; }
 is_wsl() { grep -qi microsoft /proc/version 2>/dev/null; }
 is_macos() { [ "$(uname -s 2>/dev/null)" = "Darwin" ]; }
 
-# Cliente docker usable: CLI de WSL o docker.exe de Docker Desktop (Windows).
+DOCKER_CLI=()
+DOCKER_USED_SUDO=false
+
+# Cliente docker usable: docker (Linux), sudo docker (sin grupo docker), o docker.exe (Windows/WSL).
 resolve_docker_cli() {
+  DOCKER_CLI=()
+  DOCKER_USED_SUDO=false
+
   if command -v docker >/dev/null 2>&1; then
+    if docker info >/dev/null 2>&1; then
+      DOCKER_CLI=(docker)
+      return 0
+    fi
+    # Caso típico en Linux: el demonio corre, pero el usuario no está en el grupo docker.
+    if command -v sudo >/dev/null 2>&1 && sudo docker info >/dev/null 2>&1; then
+      DOCKER_CLI=(sudo docker)
+      DOCKER_USED_SUDO=true
+      return 0
+    fi
+    # Cliente presente; el motor puede estar apagado.
     DOCKER_CLI=(docker)
     return 0
   fi
+
   local exe
   for exe in \
     /mnt/c/Users/*/AppData/Local/Programs/DockerDesktop/resources/bin/docker.exe \
@@ -57,13 +75,25 @@ resolve_docker_cli() {
       return 0
     fi
   done
-  DOCKER_CLI=()
   return 1
 }
 
 docker_engine_up() {
   resolve_docker_cli || return 1
   "${DOCKER_CLI[@]}" info >/dev/null 2>&1
+}
+
+docker_permission_hint() {
+  if ! command -v docker >/dev/null 2>&1; then
+    return 1
+  fi
+  local err
+  err="$(docker info 2>&1)" || true
+  printf '%s' "$err" | grep -qiE 'permission denied|access denied|connect: permission'
+}
+
+linux_docker_service_active() {
+  command -v systemctl >/dev/null 2>&1 && systemctl is-active --quiet docker 2>/dev/null
 }
 
 # Convierte /mnt/c/Users/... → C:\Users\...
@@ -181,6 +211,7 @@ start_docker_engine() {
   # Linux nativo: servicio systemd
   if command -v systemctl >/dev/null 2>&1; then
     if systemctl is-active --quiet docker 2>/dev/null; then
+      ok "Servicio docker ya estaba activo"
       return 0
     fi
     if systemctl start docker 2>/dev/null; then
@@ -213,16 +244,19 @@ wait_for_docker_engine() {
   info "Esperando a que el motor de Docker esté listo (hasta ${timeout_s}s)"
   until docker_engine_up; do
     if [ "$elapsed" -ge "$timeout_s" ]; then
-      fail "Docker no respondió en ${timeout_s}s. Si usas WSL, activa Settings → Resources → WSL integration para esta distro."
+      if docker_permission_hint; then
+        fail "Docker está instalado pero este usuario no tiene permiso. Ejecuta: sudo usermod -aG docker \"\$USER\" && newgrp docker
+(o cierra sesión y vuelve a entrar). Mientras tanto el script puede usar sudo si está disponible."
+      fi
+      if is_wsl; then
+        fail "Docker no respondió en ${timeout_s}s. Activa Settings → Resources → WSL integration para esta distro."
+      fi
+      fail "Docker no respondió en ${timeout_s}s. Revisa: systemctl status docker  (o abre Docker Desktop)."
     fi
     sleep 3
     elapsed=$((elapsed + 3))
     printf '  … %ss\n' "$elapsed"
   done
-  # Preferir el CLI de Linux cuando ya esté inyectado por Desktop
-  if command -v docker >/dev/null 2>&1; then
-    DOCKER_CLI=(docker)
-  fi
   ok "Motor de Docker listo"
 }
 
@@ -265,23 +299,44 @@ JUPYTER_URL="http://localhost:${JUPYTER_HOST_PORT}/?token=${JUPYTER_TOKEN}"
 
 # --- 1. Docker disponible -----------------------------------------------------
 info "Comprobando Docker"
+
+# Caso frecuente en Linux: docker solo funciona con sudo (usuario fuera del grupo docker).
+if ! docker_engine_up; then
+  if docker_permission_hint && command -v sudo >/dev/null 2>&1; then
+    info "Sin permiso sobre el socket de Docker; reintentando con sudo"
+    if sudo docker info >/dev/null 2>&1; then
+      DOCKER_CLI=(sudo docker)
+      DOCKER_USED_SUDO=true
+      ok "Usando 'sudo docker' (recomendado: sudo usermod -aG docker \$USER && newgrp docker)"
+    fi
+  fi
+fi
+
 if ! docker_engine_up; then
   if ! resolve_docker_cli && ! is_wsl && ! is_macos; then
     fail "No se encuentra 'docker'. Instala Docker Engine o Docker Desktop: https://docs.docker.com/get-docker/"
   fi
+
+  # Si el servicio ya corre pero no hay permiso ni sudo → fallo claro (no esperar 180s).
+  if linux_docker_service_active && docker_permission_hint; then
+    fail "Docker está activo, pero tu usuario no puede usarlo sin sudo.
+Solución permanente:
+  sudo usermod -aG docker \"\$USER\"
+  newgrp docker
+Luego vuelve a ejecutar ./run_app.sh
+(o ejecuta este script en una terminal donde 'sudo docker info' funcione)."
+  fi
+
   start_docker_engine
   wait_for_docker_engine 180
 fi
 
-resolve_docker_cli || fail "No se encuentra el cliente 'docker' tras iniciar el motor."
-
-# Preferir CLI de Linux (integración WSL); si no, docker.exe de Windows
-if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
-  DOCKER_CLI=(docker)
-fi
+docker_engine_up || fail "No se encuentra un cliente 'docker' usable tras iniciar el motor."
 
 if "${DOCKER_CLI[@]}" compose version >/dev/null 2>&1; then
   compose=("${DOCKER_CLI[@]}" compose)
+elif [ "${DOCKER_USED_SUDO}" = true ] && sudo docker-compose version >/dev/null 2>&1; then
+  compose=(sudo docker-compose)
 elif command -v docker-compose >/dev/null 2>&1; then
   compose=(docker-compose)
 else
@@ -289,6 +344,9 @@ else
 fi
 
 ok "Docker listo ($("${compose[@]}" version --short 2>/dev/null || echo compose))"
+if [ "${DOCKER_USED_SUDO}" = true ]; then
+  info "Nota: se está usando sudo. Para no pedirlo: sudo usermod -aG docker \$USER && newgrp docker"
+fi
 
 if $stop; then
   info "Deteniendo contenedores"
