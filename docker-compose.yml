@@ -5,13 +5,17 @@
 #   isabeln9/nudat3-streamlit:latest
 #   mysql:8.0  (oficial)
 #
-# Usage:
-#   ./run_app.sh                 # pull + up + carga datos + abre la app
-#   docker compose pull && docker compose up -d
-#   docker compose up -d --build # reconstruir localmente y etiquetar con los nombres de Hub
-#   # Jupyter: http://localhost:8888  (token: nudat)
-#   # Streamlit: http://localhost:8501
-#   # MySQL:   localhost:3306  user/pass/db: nudat/nudat/nudat
+# Uso (cualquier SO con Docker Desktop / Engine):
+#   cp .env.example .env          # Windows: copy .env.example .env
+#   ./run_app.sh                  # Linux / macOS / WSL / Git Bash
+#   .\run_app.ps1                 # Windows PowerShell
+#
+# Compose lee .env automáticamente para ${VAR}. Sin .env usan los defaults.
+#
+# URLs por defecto:
+#   Streamlit http://localhost:8501
+#   Jupyter   http://localhost:8888  (token = JUPYTER_TOKEN)
+#   MySQL     localhost:MYSQL_HOST_PORT (default 3307)
 
 services:
   mysql:
@@ -19,19 +23,23 @@ services:
     container_name: nudat-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: nudatroot
-      MYSQL_DATABASE: nudat
-      MYSQL_USER: nudat
-      MYSQL_PASSWORD: nudat
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-nudatroot}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-nudat}
+      MYSQL_USER: ${MYSQL_USER:-nudat}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-nudat}
     ports:
-      - "3306:3306"
+      - "${MYSQL_HOST_PORT:-3307}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./sql/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
     networks:
       - nudat_net
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-pnudatroot"]
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent || exit 1",
+        ]
       interval: 5s
       timeout: 5s
       retries: 30
@@ -45,15 +53,15 @@ services:
     container_name: nudat-jupyter
     restart: unless-stopped
     environment:
-      MYSQL_HOST: mysql
-      MYSQL_PORT: "3306"
-      MYSQL_USER: nudat
-      MYSQL_PASSWORD: nudat
-      MYSQL_DATABASE: nudat
-      JUPYTER_TOKEN: nudat
+      MYSQL_HOST: ${MYSQL_HOST:-mysql}
+      MYSQL_PORT: ${MYSQL_PORT:-3306}
+      MYSQL_USER: ${MYSQL_USER:-nudat}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-nudat}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-nudat}
+      JUPYTER_TOKEN: ${JUPYTER_TOKEN:-nudat}
       PYTHONPATH: /home/jovyan/work
     ports:
-      - "8888:8888"
+      - "${JUPYTER_HOST_PORT:-8888}:8888"
     volumes:
       - ./:/home/jovyan/work
     working_dir: /home/jovyan/work
@@ -62,12 +70,11 @@ services:
         condition: service_healthy
     networks:
       - nudat_net
-    # JupyterLab with fixed token; repo is the working directory
-    command: >
-      start-notebook.py
-      --ServerApp.root_dir=/home/jovyan/work
-      --IdentityProvider.token=nudat
-      --ServerApp.ip=0.0.0.0
+    command:
+      - start-notebook.py
+      - --ServerApp.root_dir=/home/jovyan/work
+      - --IdentityProvider.token=${JUPYTER_TOKEN:-nudat}
+      - --ServerApp.ip=0.0.0.0
 
   streamlit:
     image: isabeln9/nudat3-streamlit:latest
@@ -77,14 +84,14 @@ services:
     container_name: nudat-streamlit
     restart: unless-stopped
     environment:
-      MYSQL_HOST: mysql
-      MYSQL_PORT: "3306"
-      MYSQL_USER: nudat
-      MYSQL_PASSWORD: nudat
-      MYSQL_DATABASE: nudat
+      MYSQL_HOST: ${MYSQL_HOST:-mysql}
+      MYSQL_PORT: ${MYSQL_PORT:-3306}
+      MYSQL_USER: ${MYSQL_USER:-nudat}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-nudat}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-nudat}
       PYTHONPATH: /app
     ports:
-      - "8501:8501"
+      - "${STREAMLIT_HOST_PORT:-8501}:8501"
     volumes:
       - ./:/app
     working_dir: /app
@@ -93,6 +100,18 @@ services:
         condition: service_healthy
     networks:
       - nudat_net
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8501/_stcore/health')",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 25s
 
 volumes:
   mysql_data:
